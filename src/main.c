@@ -21,6 +21,15 @@ ADC2_Cmd(ENABLE);
 // počkáme než se AD převodník rozběhne (~7us)
 ADC2_Startup_Wait();
 }
+void TIM2_setup(void){
+    TIM2_DeInit();
+    TIM2_TimeBaseInit(TIM2_PRESCALER_1, 640 - 1);//25kHz    
+    TIM2_OC1Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, 200, 
+                TIM2_OCPOLARITY_LOW);
+    TIM2_Cmd(ENABLE);
+
+}
+
 
 void init(void)
 {
@@ -28,6 +37,7 @@ void init(void)
     init_milis();
     lcd_init();
     ADC_init();
+    TIM2_setup();
 }
 
 
@@ -37,21 +47,21 @@ int main(void)
     uint32_t timeA = 0;
     uint16_t adc_value;
     char text[32];
-    int16_t voltage1;
-    int16_t teplota1;
-    int16_t teplota2;
+    int16_t teplota;
+    int16_t teplota_1_cast;
+    int16_t teplota_2_cast;
 
     while (1) {
         if (milis()-timeA>100){
             timeA=milis();
             adc_value = ADC_get(ADC2_CHANNEL_2); // do adc_value ulož výsledek převodu vstupu ADC_IN2 (PB2)
-            voltage1 = ((uint32_t)adc_value*5000 + 512)/1024;
-            teplota1=voltage1/10;
-            teplota2=voltage1%10;
+            teplota = ((uint32_t)adc_value*5000 + 512)/1024;
+            teplota_1_cast=teplota/10;//celočíselná část
+            teplota_2_cast=teplota%10;//desetinná část
 
         }
         lcd_gotoxy(0, 0);
-        sprintf(text,"Teplota = %2u %1u C",teplota1,teplota2);
+        sprintf(text,"Teplota = %2u %1u C",teplota_1_cast,teplota_2_cast);
         lcd_puts(text);
     }
 }
