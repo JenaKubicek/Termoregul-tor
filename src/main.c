@@ -24,9 +24,10 @@ ADC2_Startup_Wait();
 void TIM2_setup(void){
     TIM2_DeInit();
     TIM2_TimeBaseInit(TIM2_PRESCALER_1, 640 - 1);//25kHz    
-    TIM2_OC1Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, 200, 
+    TIM2_OC2Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, 1, 
                 TIM2_OCPOLARITY_LOW);
     TIM2_Cmd(ENABLE);
+    TIM2_OC2PreloadConfig(ENABLE);
 
 }
 
